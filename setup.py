@@ -10,6 +10,7 @@ setup(
     license='MIT',
     install_requires=[
         'attrs',
+        'dfa',
         'funcy',
     ],
     packages=find_packages(),

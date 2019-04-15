@@ -1,69 +1,79 @@
-from typing import TypeVar, Hashable, FrozenSet, Callable, Union
+from typing import FrozenSet, Union
 
 import attr
 import funcy as fn
 from dfa import DFA
 
-
-Letter = Hashable
-Alphabet = FrozenSet[Hashable]
-Word = TypeVar('Word')  # Hashable Sequence of elements of Alphabet.
-
-MembershipOracle = Callable[[Word], bool]
-
-CounterExample = Union[bool, Word]
-EquivalenceOracle = Callable[[Word], CounterExample]
+from lstar.common import Alphabet, MembershipOracle, Word
 
 
 @attr.s(auto_attribs=True)
 class Node:
-    distinguishing: Word
-    left: Union[Word, "Node"]  # Fixed in python 3.7
-    right: Union[Word, "Node"]
+    data: Word
+    left: Union[None, "Node"] = None  # Fixed in python 3.7
+    right: Union[None, "Node"] = None
+
+    @property
+    def is_leaf(self):
+        return self.left is None and self.right is None
 
 
 @attr.s(frozen=True, auto_attribs=True)
 class ClassificationTree:
+    alphabet: Alphabet
     membership: MembershipOracle
-    equivalence: EquivalenceOracle
-    alphabet: FrozenSet[Letter]
-    root: Node
+    root: Union[Word, Node] = ()
 
     def _sift(self, word):
         node = self.root
-        while isinstance(node, Node):
-            yield node.distinguishing
+        while not node.is_leaf:
+            yield node
 
-            if self.membership(word + node.distinguishing):
+            if self.membership(word + node.data):
                 node = node.right
             else:
                 node = node.left
 
         yield node
 
-    def _leaves(self):
+    def access_words(self):
         stack = [self.root]
         while stack:
             node = stack.pop()
-            if isinstance(node, Node):
-                stack.extend([node.left, node.right])
-            else:
+            if node.is_leaf:
                 yield node
+            else:
+                stack.extend([node.left, node.right])
 
-    def sift(self, word) -> Word:
+    def sift(self, word) -> Node:
         return fn.last(self._sift(word))
 
     def lca(self, word1, word2) -> Word:
         """Least Common Ancestor."""
         trace = zip(self._sift(word1), self._sift(word2))
         common_ancestors = ((n1, n2) for (n1, n2) in trace if n1 == n2)
-        return fn.last(common_ancestors)
+        return fn.last(common_ancestors).data
 
     def extract_dfa(self) -> DFA:
-        start=self.root.distinguishing if isinstance(self.root, Node) else node
         return DFA(
-            start=start,
+            start=(),
             alphabet=self.alphabet,
             accept=self.membership,
-            transition=self.sift,
+            transition=lambda w, c: self.sift(w + (c,)).data,
         )
+
+    def update_tree(self, word: Word, hypothesis: DFA):
+        prefixes = (word[:i] for i in range(len(word)))
+        sifts = map(self.sift, prefixes)
+        trace = hypothesis.trace(word)
+
+        prefix_prev, s_tree_prev = None
+        for prefix, s_tree, s_cnd in zip(prefixes, sifts, traces):
+            if s_tree.data != s_cnd:
+                break
+
+            prefix_prev, s_tree_prev = prefix, s_tree
+
+        s_tree_prev.left = Node(s_tree_prev.data)
+        s_tree_prev.right = Node(prefix_prev)
+        s_tree_prev.data = prefix + self.lca(s_tree.data, s_cnd)
