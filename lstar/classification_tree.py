@@ -1,4 +1,4 @@
-from typing import FrozenSet, Union
+from typing import Union
 
 import attr
 import funcy as fn
@@ -22,7 +22,7 @@ class Node:
 class ClassificationTree:
     alphabet: Alphabet
     membership: MembershipOracle
-    root: Union[Word, Node] = ()
+    root: Node = Node(())
 
     def _sift(self, word):
         node = self.root
@@ -51,7 +51,7 @@ class ClassificationTree:
     def lca(self, word1, word2) -> Word:
         """Least Common Ancestor."""
         trace = zip(self._sift(word1), self._sift(word2))
-        common_ancestors = ((n1, n2) for (n1, n2) in trace if n1 == n2)
+        common_ancestors = (n1 for (n1, n2) in trace if n1 == n2)
         return fn.last(common_ancestors).data
 
     def extract_dfa(self) -> DFA:
@@ -63,17 +63,26 @@ class ClassificationTree:
         )
 
     def update_tree(self, word: Word, hypothesis: DFA):
-        prefixes = (word[:i] for i in range(len(word)))
-        sifts = map(self.sift, prefixes)
-        trace = hypothesis.trace(word)
+        if self.root.is_leaf:
+            assert self.root.data == ()
+            self.root.left = Node(())
+            self.root.right = Node(word)
+            return
 
-        prefix_prev, s_tree_prev = None
-        for prefix, s_tree, s_cnd in zip(prefixes, sifts, traces):
+        # TODO: change back to generators
+        prefixes = [word[:i] for i in range(len(word) + 1)]
+        sifts = fn.lmap(self.sift, prefixes)
+        trace = list(hypothesis.trace(word))
+
+        prefix_prev = s_tree_prev = None
+        for prefix, s_tree, s_cnd in zip(prefixes, sifts, trace):
             if s_tree.data != s_cnd:
                 break
 
             prefix_prev, s_tree_prev = prefix, s_tree
 
+        assert s_tree.data != s_cnd
+
         s_tree_prev.left = Node(s_tree_prev.data)
         s_tree_prev.right = Node(prefix_prev)
-        s_tree_prev.data = prefix + self.lca(s_tree.data, s_cnd)
+        s_tree_prev.data = (prefix[-1],) + self.lca(s_tree.data, s_cnd)
