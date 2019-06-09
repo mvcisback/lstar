@@ -69,12 +69,11 @@ class ClassificationTree:
             self.root.right = Node(word)
             return
 
-        prefixes = (word[:i] for i in range(len(word) + 1))
-        sifts = fn.lmap(self.sift, prefixes)
+        sifts = map(self.sift, prefixes(word))
         trace = hypothesis.trace(word)
 
         prefix_prev = s_tree_prev = None
-        for prefix, s_tree, s_cnd in zip(prefixes, sifts, trace):
+        for prefix, s_tree, s_cnd in zip(prefixes(word), sifts, trace):
             if s_tree.data != s_cnd:
                 break
 
@@ -85,3 +84,7 @@ class ClassificationTree:
         s_tree_prev.left = Node(s_tree_prev.data)
         s_tree_prev.right = Node(prefix_prev)
         s_tree_prev.data = (prefix[-1],) + self.lca(s_tree.data, s_cnd)
+
+
+def prefixes(word):
+    return (word[:i] for i in range(len(word) + 1))
