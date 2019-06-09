@@ -5,7 +5,7 @@ before_install:
 - pip install poetry
 install:
 - poetry install
-script: pytest --flake8 --cov=lstar --cov-report=html -n2
+script: poetry run pytest --flake8 --cov=lstar --cov-report=html -n2
 cache:
   directories:
     - ${HOME}/.cache/pip
