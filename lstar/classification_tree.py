@@ -69,10 +69,9 @@ class ClassificationTree:
             self.root.right = Node(word)
             return
 
-        # TODO: change back to generators
-        prefixes = [word[:i] for i in range(len(word) + 1)]
+        prefixes = (word[:i] for i in range(len(word) + 1))
         sifts = fn.lmap(self.sift, prefixes)
-        trace = list(hypothesis.trace(word))
+        trace = hypothesis.trace(word)
 
         prefix_prev = s_tree_prev = None
         for prefix, s_tree, s_cnd in zip(prefixes, sifts, trace):
