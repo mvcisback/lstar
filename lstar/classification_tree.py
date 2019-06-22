@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Mapping, Union
 
 import attr
 import funcy as fn
@@ -10,12 +10,21 @@ from lstar.common import Alphabet, MembershipOracle, Word
 @attr.s(auto_attribs=True)
 class Node:
     data: Word
-    left: Union[None, "Node"] = None  # Fixed in python 3.7
-    right: Union[None, "Node"] = None
+    children: Mapping[Alphabet, Union[None, "Node"]] = attr.ib(factory=dict)
 
     @property
     def is_leaf(self):
-        return self.left is None and self.right is None
+        return len(self.children) == 0
+
+    @property
+    def left(self):
+        # TODO: remove
+        return self.children.get(False)
+
+    @property
+    def right(self):
+        # TODO: remove
+        return self.children.get(True)
 
 
 @attr.s(frozen=True, auto_attribs=True)
@@ -62,8 +71,9 @@ class ClassificationTree:
     def update_tree(self, word: Word, hypothesis: DFA):
         if self.root.is_leaf:
             assert self.root.data == ()
-            self.root.left = Node(())
-            self.root.right = Node(word)
+            init_label = self.membership(())
+            self.root.children[init_label] = Node(())
+            self.root.children[not init_label] = Node(word)
             return
 
         sifts = map(self.sift, prefixes(word))
@@ -78,9 +88,17 @@ class ClassificationTree:
 
         assert s_tree.data != s_cnd
 
-        s_tree_prev.left = Node(s_tree_prev.data)
-        s_tree_prev.right = Node(prefix_prev)
-        s_tree_prev.data = (prefix[-1],) + self.lca(s_tree.data, s_cnd)
+        # TODO: can this membership query be infered already
+        # from counter example?
+        # TODO: Only need to perform n-1 tests for moore machine.
+        test = (prefix[-1],) + self.lca(s_tree.data, s_cnd)
+        test_res = self.membership(s_tree_prev.data + test)
+
+        s_tree_prev.children = {
+            test_res: Node(s_tree_prev.data),
+            (not test_res): Node(prefix_prev),
+        }
+        s_tree_prev.data = test
 
 
 def prefixes(word):
