@@ -1,4 +1,5 @@
-from typing import Mapping, Union
+from __future__ import annotations
+from typing import Mapping, Optional
 
 import attr
 import funcy as fn
@@ -10,21 +11,17 @@ from lstar.common import Alphabet, MembershipOracle, Word
 @attr.s(auto_attribs=True)
 class Node:
     data: Word
-    children: Mapping[Alphabet, Union[None, "Node"]] = attr.ib(factory=dict)
+    children: Mapping[bool, Optional[Node]] = attr.ib(factory=dict)
 
     @property
     def is_leaf(self):
         return len(self.children) == 0
 
-    @property
-    def left(self):
-        # TODO: remove
-        return self.children.get(False)
+    def __getitem__(self, key):
+        return self.children.get(key)
 
-    @property
-    def right(self):
-        # TODO: remove
-        return self.children.get(True)
+    def __setitem__(self, key, val):
+        self.children[key] = val
 
 
 @attr.s(frozen=True, auto_attribs=True)
@@ -38,18 +35,14 @@ class ClassificationTree:
         while not node.is_leaf:
             yield node
             test = word + node.data
-            node = node.right if self.membership(test) else node.left
+            test_res = self.membership(test)
+
+            if test_res not in node.children:  # Discovered new state.
+                node[test_res] = Node(test)
+
+            node = node[test_res]
 
         yield node
-
-    def access_words(self):
-        stack = [self.root]
-        while stack:
-            node = stack.pop()
-            if node.is_leaf:
-                yield node
-            else:
-                stack.extend([node.left, node.right])
 
     def sift(self, word) -> Node:
         return fn.last(self._sift(word))
@@ -72,8 +65,8 @@ class ClassificationTree:
         if self.root.is_leaf:
             assert self.root.data == ()
             init_label = self.membership(())
-            self.root.children[init_label] = Node(())
-            self.root.children[not init_label] = Node(word)
+            self.root[init_label] = Node(())
+            self.root[not init_label] = Node(word)
             return
 
         sifts = map(self.sift, prefixes(word))
@@ -88,8 +81,8 @@ class ClassificationTree:
 
         assert s_tree.data != s_cnd
 
-        # TODO: can this membership query be infered already
-        # from counter example?
+        # TODO: can this membership query be inferred already
+        #       from counter examples?
         # TODO: Only need to perform n-1 tests for moore machine.
         test = (prefix[-1],) + self.lca(s_tree.data, s_cnd)
         test_res = self.membership(s_tree_prev.data + test)
