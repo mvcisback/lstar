@@ -28,11 +28,8 @@ class ClassificationTree:
         node = self.root
         while not node.is_leaf:
             yield node
-
-            if self.membership(word + node.data):
-                node = node.right
-            else:
-                node = node.left
+            test = word + node.data
+            node = node.right if self.membership(test) else node.left
 
         yield node
 
