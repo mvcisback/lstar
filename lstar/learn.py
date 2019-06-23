@@ -12,7 +12,7 @@ def learn_dfa(alphabet, membership, find_counter_example, lazy=False) -> DFA:
 def _learn_dfa(alphabet, membership, find_counter_example, lazy=False):
     tree = ClassificationTree(
         alphabet=alphabet,
-        membership=membership,
+        labeler=membership,
     )
 
     while True:

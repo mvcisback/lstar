@@ -27,7 +27,7 @@ class Node:
 @attr.s(frozen=True, auto_attribs=True)
 class ClassificationTree:
     alphabet: Alphabet = attr.ib(converter=frozenset)
-    membership: LabelOracle
+    labeler: LabelOracle
     root: Node = Node(())
 
     def _sift(self, word):
@@ -35,7 +35,7 @@ class ClassificationTree:
         while not node.is_leaf:
             yield node
             test = word + node.data
-            test_res = self.membership(test)
+            test_res = self.labeler(test)
 
             if test_res not in node.children:  # Discovered new state.
                 node[test_res] = Node(test)
@@ -57,14 +57,14 @@ class ClassificationTree:
         return DFA(
             start=(),
             alphabet=self.alphabet,
-            accept=self.membership,
+            accept=self.labeler,
             transition=lambda w, c: self.sift(w + (c,)).data,
         )
 
     def update_tree(self, word: Word, hypothesis: DFA):
         if self.root.is_leaf:
             assert self.root.data == ()
-            init_label = self.membership(())
+            init_label = self.labeler(())
             self.root[init_label] = Node(())
             self.root[not init_label] = Node(word)
             return
@@ -81,11 +81,11 @@ class ClassificationTree:
 
         assert s_tree.data != s_cnd
 
-        # TODO: can this membership query be inferred already
+        # TODO: can this label query be inferred already
         #       from counter examples?
         # TODO: Only need to perform n-1 tests for moore machine.
         test = (prefix[-1],) + self.lca(s_tree.data, s_cnd)
-        test_res = self.membership(s_tree_prev.data + test)
+        test_res = self.labeler(s_tree_prev.data + test)
 
         s_tree_prev.children = {
             test_res: Node(s_tree_prev.data),
