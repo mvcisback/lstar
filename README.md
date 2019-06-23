@@ -155,4 +155,6 @@ in the root of the repository.
 1. [ ] Default to random sampling counter example engine.
 
 
+# Footnotes
+
 [^1]: Kearns, Michael J., Umesh Virkumar Vazirani, and Umesh Vazirani. An introduction to computational learning theory. MIT press, 1994.
