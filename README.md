@@ -8,6 +8,24 @@
 Implementation of the discriminant tree L* algorithm DFA learning algorithm
 provided in [^1].
 
+
+<!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-generate-toc again -->
+**Table of Contents**
+
+- [L*](#l)
+- [Installation](#installation)
+- [Usage](#usage)
+    - [Membership Queries](#membership-queries)
+    - [Equivalence Queries](#equivalence-queries)
+    - [All together](#all-together)
+- [Testing](#testing)
+- [TODO](#todo)
+- [Footnotes](#footnotes)
+
+<!-- markdown-toc end -->
+
+
+
 # Installation
 
 If you just need to use `lstar`, you can just run:
