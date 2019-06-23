@@ -23,7 +23,36 @@ run:
 
 # Usage
 
-TODO
+```
+from lstar import learn_dfa
+
+def is3mod4(word):
+    """Want to learn 4 state counter"""
+    return sum(word) % 4 == 3
+
+
+def ask_human(dfa):
+    """User generated counter example.
+
+    An alternative includes sampling or checking against an approximate
+    model.
+    """
+    print(dfa)
+    return tuple(input("> Please provide a counter example "))
+
+
+dfa = learn_dfa(
+    alphabet={0, 1},  #  Possible inputs.
+    membership=is3mod4,  #  Does this sequence belong in the language.
+    find_counter_example=ask_human,  #  Use a human for counter examples.
+)
+
+assert not dfa.accepts(())
+assert not dfa.accepts((1,))
+assert not dfa.accepts((1, 1, ))
+assert dfa.accepts((1, 1, 1))
+assert dfa.accepts((1, 1, 0, 1))
+```
 
 # Testing
 

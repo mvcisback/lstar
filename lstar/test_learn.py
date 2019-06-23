@@ -1,10 +1,10 @@
-from lstar.learn import _learn_dfa
+from lstar.learn import _learn_dfa, learn_dfa
 
 
 def test_learn():
     count = 0
 
-    def find_counter_example(_):
+    def find_ce(_):
         nonlocal count
         assert count < 5
         count += 1
@@ -16,7 +16,7 @@ def test_learn():
     def membership(state):
         return sum(state) % 4 == 3
 
-    hypotheses = _learn_dfa({0, 1}, membership, find_counter_example)
+    hypotheses = _learn_dfa({0, 1}, membership, find_ce)
     for i, dfa in enumerate(hypotheses):
         assert i < 4
         if i < 3:
@@ -25,5 +25,7 @@ def test_learn():
         else:
             assert len(dfa.states()) == 4
             assert dfa.accepts((1, 1, 0, 1))
+
+    assert learn_dfa({0, 1}, membership, find_ce).accepts((1, 1, 0, 1))
 
     # TODO: implement actual DFA equivalence checking.
