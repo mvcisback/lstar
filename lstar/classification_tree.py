@@ -5,13 +5,13 @@ import attr
 import funcy as fn
 from dfa import DFA
 
-from lstar.common import Alphabet, MembershipOracle, Word
+from lstar.common import Alphabet, Letter, LabelOracle, Word
 
 
 @attr.s(auto_attribs=True)
 class Node:
     data: Word
-    children: Mapping[bool, Optional[Node]] = attr.ib(factory=dict)
+    children: Mapping[Letter, Optional[Node]] = attr.ib(factory=dict)
 
     @property
     def is_leaf(self):
@@ -26,8 +26,8 @@ class Node:
 
 @attr.s(frozen=True, auto_attribs=True)
 class ClassificationTree:
-    alphabet: Alphabet
-    membership: MembershipOracle
+    alphabet: Alphabet = attr.ib(converter=frozenset)
+    membership: LabelOracle
     root: Node = Node(())
 
     def _sift(self, word):

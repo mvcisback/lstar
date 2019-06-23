@@ -23,12 +23,49 @@ run:
 
 # Usage
 
-```
-from lstar import learn_dfa
+The main entry point for using this library is the `learn_dfa`
+function.
 
-def is3mod4(word):
+```python
+from lstar import learn_dfa
+```
+
+This function requires the arguments:
+```python
+dfa = learn_dfa(
+    alphabet= .. ,  #  Alphabet over which the target concept is over.
+                    #  Note: Sequence of Hashables.
+
+    membership=..,  #  Function answering wether a given word is in the target
+                    #  language.
+
+    find_counter_example=..,  #  Function which takes a hypothesis DFA
+                              #  and either returns None or a counter example,
+                              #  i.e., an element misclassified by hypothesis
+                              #  DFA.
+                              #
+                              #  TODO: Make argument optional
+                              #  using a sampling strategy.
+)
+```
+
+
+Below is an example of learning following language over `{0, 1}`:
+
+
+> The number of 1's in the word is a multiple of 4.
+
+
+```python
+from functools import lru_cache
+
+
+
+# 
+@lru_cache(maxsize=None)  # Memoize member queries 
+def is_mult_4(word):
     """Want to learn 4 state counter"""
-    return sum(word) % 4 == 3
+    return (sum(word) % 4) == 0
 
 
 def ask_human(dfa):
@@ -43,7 +80,7 @@ def ask_human(dfa):
 
 dfa = learn_dfa(
     alphabet={0, 1},  #  Possible inputs.
-    membership=is3mod4,  #  Does this sequence belong in the language.
+    membership=is_mult_4,  #  Does this sequence belong in the language.
     find_counter_example=ask_human,  #  Use a human for counter examples.
 )
 
@@ -53,6 +90,11 @@ assert not dfa.accepts((1, 1, ))
 assert dfa.accepts((1, 1, 1))
 assert dfa.accepts((1, 1, 0, 1))
 ```
+
+## Memoizing Membership Queries
+
+Note that this implementation of lstar assumes that
+
 
 # Testing
 
