@@ -54,7 +54,7 @@ dfa = learn_dfa(
     alphabet= .. ,  #  Alphabet over which the target concept is over.
                     #  Note: Sequence of Hashables.
 
-    membership=..,  #  Function answering wether a given word is in the target
+    membership=..,  #  Function answering whether a given word is in the target
                     #  language.
 
     find_counter_example=..,  #  Function which takes a hypothesis DFA
