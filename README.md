@@ -133,11 +133,54 @@ dfa = learn_dfa(
     find_counter_example=ask_human,  #  Use a human for counter examples.
 )
 
-assert not dfa.accepts(())
-assert not dfa.accepts((1,))
-assert not dfa.accepts((1, 1, ))
-assert dfa.accepts((1, 1, 1))
-assert dfa.accepts((1, 1, 0, 1))
+assert not dfa.label(())
+assert not dfa.label((1,))
+assert not dfa.label((1, 1, ))
+assert dfa.label((1, 1, 1))
+assert dfa.label((1, 1, 0, 1))
+```
+
+# Learning Moore Machines and DFA-labelers
+
+By default, `learn_dfa` learns as Deterministic Finite Acceptor;
+however, by specifying the `outputs` parameter and adjusting the
+`membership` function, one can learn a Deterministic Finite Labeler
+(which is isomorphic to a Moore Machine). 
+
+For example, the 4 state counter from before can be modified to output
+the current count rather than whether or not the word sums to a
+multiple of 4.
+
+
+```python
+def sum_mod_4(state):
+    return sum(state) % 4
+
+dfl = learn_dfa(
+    alphabet={0, 1},
+    membership=sum_mod_4,
+    find_counter_example=ask_human,
+    outputs={0, 1, 2, 3},
+)  # Returns a Deterministic Finite Labeler.
+
+assert dfl.label(()) == 0
+assert dfl.label((1,)) == 1
+assert dfl.label((1, 1, )) == 2
+assert dfl.label((1, 1, 1)) == 3
+assert dfl.label((1, 1, 0, 1)) == 3
+assert dfl.label((1, 1, 1, 1)) == 0
+```
+
+The deterministic labeler can be interpreted as a moore machine by
+using the `transduce` method rather than `label`.
+
+```python
+assert dfl.transduce(()) == ()
+assert dfl.transduce((1,)) == (0,)
+assert dfl.transduce((1, 1, )) == (0, 1)
+assert dfl.transduce((1, 1, 1)) == (0, 1, 2)
+assert dfl.transduce((1, 1, 0, 1)) == (0, 1, 2, 2)
+assert dfl.transduce((1, 1, 1, 1, 1)) == (0, 1, 2, 3, 0)
 ```
 
 
@@ -152,8 +195,8 @@ in the root of the repository.
 # TODO
 
 1. [ ] Test counterexample validation decorator.
-1. [ ] Generalize to learning Moore Machines.
-1. [ ] Default to random sampling counter example engine.
+1. [ ] Add retry old counterexamples decorator.
+1. [ ] Default to random sampling counterexample engine
 
 
 # Footnotes
