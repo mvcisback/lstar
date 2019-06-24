@@ -29,6 +29,9 @@ class ClassificationTree:
     alphabet: Alphabet = attr.ib(converter=frozenset)
     labeler: LabelOracle
     root: Node = Node(())
+    outputs: Alphabet = attr.ib(
+        converter=frozenset, default=frozenset([False, True])
+    )
 
     def _sift(self, word):
         node = self.root
@@ -56,9 +59,10 @@ class ClassificationTree:
     def extract_dfa(self) -> DFA:
         return DFA(
             start=(),
-            alphabet=self.alphabet,
-            accept=self.labeler,
+            inputs=self.alphabet,
+            label=self.labeler,
             transition=lambda w, c: self.sift(w + (c,)).data,
+            outputs=self.outputs,
         )
 
     def update_tree(self, word: Word, hypothesis: DFA):

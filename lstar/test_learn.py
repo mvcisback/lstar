@@ -21,11 +21,11 @@ def test_learn():
         assert i < 4
         if i < 3:
             assert len(dfa.states()) == 1
-            assert not dfa.accepts((1, 1, 0, 1))
+            assert not dfa.label((1, 1, 0, 1))
         else:
             assert len(dfa.states()) == 4
-            assert dfa.accepts((1, 1, 0, 1))
+            assert dfa.label((1, 1, 0, 1))
 
-    assert learn_dfa({0, 1}, membership, find_ce).accepts((1, 1, 0, 1))
+    assert learn_dfa({0, 1}, membership, find_ce).label((1, 1, 0, 1))
 
     # TODO: implement actual DFA equivalence checking.

@@ -4,12 +4,14 @@ from dfa import DFA
 from lstar.classification_tree import ClassificationTree
 
 
-def learn_dfa(alphabet, membership, find_counter_example, lazy=False) -> DFA:
+def learn_dfa(alphabet, membership, find_counter_example,
+              lazy=False, outputs=None) -> DFA:
     hypotheses = _learn_dfa(alphabet, membership, find_counter_example, lazy)
     return fn.last(hypotheses)
 
 
-def _learn_dfa(alphabet, membership, find_counter_example, lazy=False):
+def _learn_dfa(alphabet, membership, find_counter_example,
+               lazy=False, outputs=None):
     tree = ClassificationTree(
         alphabet=alphabet,
         labeler=membership,
