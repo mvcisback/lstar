@@ -10,7 +10,7 @@ from lstar.common import Alphabet, Letter, LabelOracle, Word
 
 @attr.s(auto_attribs=True)
 class Node:
-    data: Word
+    data: Word = ()
     children: Mapping[Letter, Optional[Node]] = attr.ib(factory=dict)
 
     @property
@@ -26,9 +26,9 @@ class Node:
 
 @attr.s(frozen=True, auto_attribs=True)
 class ClassificationTree:
-    alphabet: Alphabet = attr.ib(converter=frozenset)
     labeler: LabelOracle
-    root: Node = Node(())
+    alphabet: Alphabet = attr.ib(converter=frozenset)
+    root: Node = attr.ib(factory=Node)
     outputs: Alphabet = attr.ib(
         converter=frozenset, default=frozenset([False, True])
     )
@@ -41,6 +41,7 @@ class ClassificationTree:
             test_res = self.labeler(test)
 
             if test_res not in node.children:  # Discovered new state.
+                assert self.outputs != frozenset([False, True])
                 node[test_res] = Node(test)
 
             node = node[test_res]
@@ -68,9 +69,8 @@ class ClassificationTree:
     def update_tree(self, word: Word, hypothesis: DFA):
         if self.root.is_leaf:
             assert self.root.data == ()
-            init_label = self.labeler(())
-            self.root[init_label] = Node(())
-            self.root[not init_label] = Node(word)
+            self.root[self.labeler(())] = Node(())
+            self.root[self.labeler(word)] = Node(word)
             return
 
         sifts = map(self.sift, prefixes(word))
@@ -89,11 +89,12 @@ class ClassificationTree:
         #       from counter examples?
         # TODO: Only need to perform n-1 tests for moore machine.
         test = (prefix[-1],) + self.lca(s_tree.data, s_cnd)
-        test_res = self.labeler(s_tree_prev.data + test)
+        test_res1 = self.labeler(s_tree_prev.data + test)
+        test_res2 = self.labeler(prefix_prev + test)
 
         s_tree_prev.children = {
-            test_res: Node(s_tree_prev.data),
-            (not test_res): Node(prefix_prev),
+            test_res1: Node(s_tree_prev.data),
+            test_res2: Node(prefix_prev),
         }
         s_tree_prev.data = test
 

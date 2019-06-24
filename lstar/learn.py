@@ -6,7 +6,9 @@ from lstar.classification_tree import ClassificationTree
 
 def learn_dfa(alphabet, membership, find_counter_example,
               lazy=False, outputs=None) -> DFA:
-    hypotheses = _learn_dfa(alphabet, membership, find_counter_example, lazy)
+    hypotheses = _learn_dfa(
+        alphabet, membership, find_counter_example, lazy, outputs
+    )
     return fn.last(hypotheses)
 
 
@@ -15,6 +17,7 @@ def _learn_dfa(alphabet, membership, find_counter_example,
     tree = ClassificationTree(
         alphabet=alphabet,
         labeler=membership,
+        outputs={True, False} if outputs is None else outputs,
     )
 
     while True:
