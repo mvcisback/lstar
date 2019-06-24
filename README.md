@@ -106,9 +106,10 @@ def ask_human(dfa):
     """
     print(dfa)
 
-    counter_example = input("> Please provide a counter example ")
+    counter_example = input("> Please provide a counter example ").strip()
     counter_example = map(int, counter_example)  #  Language is over {0, 1}.
-    return tuple(counter_example)  # Make counter_example hashable.
+    counter_example = tuple(counter_example)  # Make counter_example hashable.
+    return counter_example if len(counter_example) > 0 else None
 ```
 
 **Note:** if you are worried that your counter example function may
