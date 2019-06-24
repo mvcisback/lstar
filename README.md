@@ -18,8 +18,10 @@ provided in [^1].
     - [Membership Queries](#membership-queries)
     - [Equivalence Queries](#equivalence-queries)
     - [All together](#all-together)
+- [Learning Moore Machines and DFA-labelers](#learning-moore-machines-and-dfa-labelers)
 - [Testing](#testing)
 - [TODO](#todo)
+- [Footnotes](#footnotes)
 - [Footnotes](#footnotes)
 
 <!-- markdown-toc end -->
