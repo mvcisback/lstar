@@ -99,6 +99,8 @@ def is_mult_4(word):
 Next you need to define a function which given a candidate `DFA`
 returns either a counter example that this `DFA` mislabels or `None`.
 
+Note that the `DFA` type used come from the `dfa` package ([link](https://github.com/mvcisback/dfa)).
+
 Below, we simply ask the user to input the counter example as a string.
 
 ```python
