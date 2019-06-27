@@ -58,14 +58,16 @@ dfa = learn_dfa(
 
     membership=..,  #  Function answering whether a given word is in the target
                     #  language.
+                    #
+                    #  Tuple[Alphabet] -> bool
 
     find_counter_example=..,  #  Function which takes a hypothesis DFA
                               #  and either returns None or a counter example,
                               #  i.e., an element misclassified by hypothesis
                               #  DFA.
                               #
-                              #  TODO: Make argument optional
-                              #  using a sampling strategy.
+                              #  DFA -> Union[Tuple[Alphabet], None]
+
 )
 ```
 
