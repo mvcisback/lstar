@@ -22,7 +22,6 @@ provided in [^1].
 - [Testing](#testing)
 - [TODO](#todo)
 - [Footnotes](#footnotes)
-- [Footnotes](#footnotes)
 
 <!-- markdown-toc end -->
 
