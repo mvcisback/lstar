@@ -1,7 +1,9 @@
 from functools import wraps
 from typing import TypeVar, Hashable, FrozenSet, Callable, Union
 
+import funcy as fn
 from dfa import DFA
+from lazytree import LazyTree
 
 
 Letter = Hashable
@@ -29,3 +31,14 @@ def validate_ce(labeler, retry=True):
                     raise RuntimeError("Counter Example is invalid!")
         return _find_ce
     return _validate
+
+
+def iterative_deeping_ce(labeler: LabelOracle, depth=10):
+    def _iddfs(dfa: DFA) -> CounterExample:
+        nodes = LazyTree(
+            root=(),
+            child_map=lambda w: [w + (i,) for i in dfa.inputs],
+        ).iddfs(max_depth=depth)
+
+        return fn.first(filter(lambda x: labeler(x) != dfa.label(x), nodes))
+    return _iddfs

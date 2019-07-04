@@ -4,6 +4,16 @@ from dfa import DFA
 from lstar.classification_tree import ClassificationTree
 
 
+def extract_dfa(tree: ClassificationTree) -> DFA:
+    return DFA(
+        start=(),
+        inputs=tree.alphabet,
+        label=tree.labeler,
+        transition=lambda w, c: tree.sift(w + (c,)).data,
+        outputs=tree.outputs,
+    )
+
+
 def learn_dfa(alphabet, membership, find_counter_example,
               lazy=False, outputs=None) -> DFA:
     hypotheses = _learn_dfa(
@@ -21,7 +31,7 @@ def _learn_dfa(alphabet, membership, find_counter_example,
     )
 
     while True:
-        hypothesis = tree.extract_dfa()
+        hypothesis = extract_dfa(tree)
         if not lazy:
             # DFA is lazily implemented.
             # Need to actually run through the DFA once to remove dependence

@@ -57,15 +57,6 @@ class ClassificationTree:
         common_ancestors = (n1 for (n1, n2) in trace if n1 == n2)
         return fn.last(common_ancestors).data
 
-    def extract_dfa(self) -> DFA:
-        return DFA(
-            start=(),
-            inputs=self.alphabet,
-            label=self.labeler,
-            transition=lambda w, c: self.sift(w + (c,)).data,
-            outputs=self.outputs,
-        )
-
     def update_tree(self, word: Word, hypothesis: DFA):
         if self.root.is_leaf:
             assert self.root.data == ()
