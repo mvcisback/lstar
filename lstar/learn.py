@@ -24,7 +24,7 @@ def learn_dfa(alphabet, membership, find_counter_example,
 
 
 def _learn_dfa(alphabet, membership, find_counter_example,
-               lazy=False, outputs=None):
+               lazy=False, outputs=None, *, with_tree=False):
     tree = ClassificationTree(
         labeler=membership,
         outputs={True, False} if outputs is None else outputs,
@@ -38,7 +38,7 @@ def _learn_dfa(alphabet, membership, find_counter_example,
             # on membership oracle.
             hypothesis.states()
 
-        yield hypothesis
+        yield (hypothesis, tree) if with_tree else hypothesis
         ce = find_counter_example(hypothesis)
         if ce is None:
             return
