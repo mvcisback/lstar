@@ -98,36 +98,33 @@ def is_mult_4(word):
 Next you need to define a function which given a candidate `DFA`
 returns either a counter example that this `DFA` mislabels or `None`.
 
-Note that the `DFA` type used come from the `dfa` package ([link](https://github.com/mvcisback/dfa)).
+Note that the `DFA` type used comes from the `dfa` package
+([link](https://github.com/mvcisback/dfa)).
 
-Below, we simply ask the user to input the counter example as a string.
+`lstar` provides two functions to make writing counterexample oracles 
+easier.
 
-```python
-def ask_human(dfa):
-    """User generated counter example.
+1. `validate_ce`: Takes a counterexample oracle and retries 
+   if returned "counterexample" is not actually a counterexample.
+   Useful if using heuristic solver or asking a human.
 
-    An alternative includes sampling or checking against an approximate
-    model.
-    """
-    print(dfa)
+    ```python
+    from lstar import validate_ce
 
-    counter_example = input("> Please provide a counter example ").strip()
-    counter_example = map(int, counter_example)  #  Language is over {0, 1}.
-    counter_example = tuple(counter_example)  # Make counter_example hashable.
-    return counter_example if len(counter_example) > 0 else None
-```
+    @validate_ce(is_mult_4, retry=True)
+    def ask_human(dfa):
+        ...
+    ```
+2. `iterative_deeping_ce`: This function performs an iterative
+   deepening traversal of the candidate dfa and see's if it matches
+   the labeler on all tested words.
 
-**Note:** if you are worried that your counter example function may
-return an invalid counter_example you can wrap it with the
-`validate_ce` decorator.
+   ```python
+   from lstar import iterative_deeping_ce
 
-```python
-from lstar import validate_ce
+   find_ce = iterative_deeping_ce(is_mult_4, depth=10)
+   ```
 
-@validate_ce(is_mult_4, retry=True)
-def ask_human(dfa):
-    ...
-```
 
 ## All together
 
@@ -135,7 +132,7 @@ def ask_human(dfa):
 dfa = learn_dfa(
     alphabet={0, 1},  #  Possible inputs.
     membership=is_mult_4,  #  Does this sequence belong in the language.
-    find_counter_example=ask_human,  #  Use a human for counter examples.
+    find_counter_example=iterative_deeping_ce(is_mult_4, depth=10)
 )
 
 assert not dfa.label(())
