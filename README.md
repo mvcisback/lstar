@@ -22,7 +22,6 @@ provided in [^1].
 - [Testing](#testing)
 - [TODO](#todo)
 - [Footnotes](#footnotes)
-- [Footnotes](#footnotes)
 
 <!-- markdown-toc end -->
 
@@ -58,14 +57,16 @@ dfa = learn_dfa(
 
     membership=..,  #  Function answering whether a given word is in the target
                     #  language.
+                    #
+                    #  Tuple[Alphabet] -> bool
 
     find_counter_example=..,  #  Function which takes a hypothesis DFA
                               #  and either returns None or a counter example,
                               #  i.e., an element misclassified by hypothesis
                               #  DFA.
                               #
-                              #  TODO: Make argument optional
-                              #  using a sampling strategy.
+                              #  DFA -> Union[Tuple[Alphabet], None]
+
 )
 ```
 
@@ -96,6 +97,8 @@ def is_mult_4(word):
 
 Next you need to define a function which given a candidate `DFA`
 returns either a counter example that this `DFA` mislabels or `None`.
+
+Note that the `DFA` type used come from the `dfa` package ([link](https://github.com/mvcisback/dfa)).
 
 Below, we simply ask the user to input the counter example as a string.
 
