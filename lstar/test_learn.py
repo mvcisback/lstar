@@ -43,8 +43,8 @@ def test_learn_moore1():
     assert label((1, )) == 1
     assert label((0, )) == 0
     dfa = learn_dfa(
-        alphabet={0, 1},
-        membership=label,
+        inputs={0, 1},
+        label=label,
         find_counter_example=ce,
         outputs={0, 1, 2},
     )
@@ -77,8 +77,8 @@ def test_learn_moore2():
     assert label((1, 1, 1, 1)) == 0
 
     dfl = learn_dfa(
-        alphabet={0, 1},
-        membership=label,
+        inputs={0, 1},
+        label=label,
         find_counter_example=find_ce,
         outputs={0, 1, 2},
     )

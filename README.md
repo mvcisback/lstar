@@ -15,7 +15,7 @@ provided in [^1].
 - [L*](#l)
 - [Installation](#installation)
 - [Usage](#usage)
-    - [Membership Queries](#membership-queries)
+    - [Label Queries](#label-queries)
     - [Equivalence Queries](#equivalence-queries)
     - [All together](#all-together)
 - [Learning Moore Machines and DFA-labelers](#learning-moore-machines-and-dfa-labelers)
@@ -52,10 +52,10 @@ from lstar import learn_dfa
 This function requires the arguments:
 ```python
 dfa = learn_dfa(
-    alphabet= .. ,  #  Alphabet over which the target concept is over.
+    inputs= .. ,  #  Inputs over which the target concept is over.
                     #  Note: Sequence of Hashables.
 
-    membership=..,  #  Function answering whether a given word is in the target
+    label=..,  #  Function answering whether a given word is in the target
                     #  language.
                     #
                     #  Tuple[Alphabet] -> bool
@@ -76,9 +76,9 @@ Below is an example of learning following language over `{0, 1}`:
 > The number of 1's in the word is a multiple of 4.
 
 
-## Membership Queries
+## Label Queries
 
-We start by defining the membership query function. 
+We start by defining the label query function. 
 
 **Note** that this implementation of `lstar` assumes that this
 function is either cheap (`O(1)`-ish) to call or is memoized.
@@ -130,8 +130,8 @@ easier.
 
 ```python
 dfa = learn_dfa(
-    alphabet={0, 1},  #  Possible inputs.
-    membership=is_mult_4,  #  Does this sequence belong in the language.
+    inputs={0, 1},  #  Possible inputs.
+    label=is_mult_4,  #  Does this sequence belong in the language.
     find_counter_example=iterative_deeping_ce(is_mult_4, depth=10)
 )
 
@@ -146,7 +146,7 @@ assert dfa.label((1, 1, 0, 1))
 
 By default, `learn_dfa` learns as Deterministic Finite Acceptor;
 however, by specifying the `outputs` parameter and adjusting the
-`membership` function, one can learn a Deterministic Finite Labeler
+`label` function, one can learn a Deterministic Finite Labeler
 (which is isomorphic to a Moore Machine). 
 
 For example, the 4 state counter from before can be modified to output
@@ -159,8 +159,8 @@ def sum_mod_4(state):
     return sum(state) % 4
 
 dfl = learn_dfa(
-    alphabet={0, 1},
-    membership=sum_mod_4,
+    inputs={0, 1},
+    label=sum_mod_4,
     find_counter_example=ask_human,
     outputs={0, 1, 2, 3},
 )  # Returns a Deterministic Finite Labeler.
