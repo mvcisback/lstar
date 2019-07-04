@@ -27,7 +27,6 @@ class Node:
 @attr.s(frozen=True, auto_attribs=True)
 class ClassificationTree:
     labeler: LabelOracle
-    alphabet: Alphabet = attr.ib(converter=frozenset)
     root: Node = attr.ib(factory=Node)
     outputs: Alphabet = attr.ib(
         converter=frozenset, default=frozenset([False, True])

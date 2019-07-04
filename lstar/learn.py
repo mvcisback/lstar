@@ -2,12 +2,13 @@ import funcy as fn
 from dfa import DFA
 
 from lstar.classification_tree import ClassificationTree
+from lstar.common import Alphabet
 
 
-def extract_dfa(tree: ClassificationTree) -> DFA:
+def extract_dfa(tree: ClassificationTree, inputs: Alphabet) -> DFA:
     return DFA(
         start=(),
-        inputs=tree.alphabet,
+        inputs=inputs,
         label=tree.labeler,
         transition=lambda w, c: tree.sift(w + (c,)).data,
         outputs=tree.outputs,
@@ -25,13 +26,12 @@ def learn_dfa(alphabet, membership, find_counter_example,
 def _learn_dfa(alphabet, membership, find_counter_example,
                lazy=False, outputs=None):
     tree = ClassificationTree(
-        alphabet=alphabet,
         labeler=membership,
         outputs={True, False} if outputs is None else outputs,
     )
 
     while True:
-        hypothesis = extract_dfa(tree)
+        hypothesis = extract_dfa(tree, alphabet)
         if not lazy:
             # DFA is lazily implemented.
             # Need to actually run through the DFA once to remove dependence
