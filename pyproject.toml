@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "lstar"
-version = "0.2.4"
+version = "0.2.5"
 description = "Python implementation of lstar automata learning algorithm."
 authors = ["Marcell J. Vazquez-Chanlatte <mvc@linux.com>"]
 license = "MIT"
