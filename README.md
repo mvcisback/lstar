@@ -12,7 +12,6 @@ provided in [^1].
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-generate-toc again -->
 **Table of Contents**
 
-- [L*](#l)
 - [Installation](#installation)
 - [Usage](#usage)
     - [Label Queries](#label-queries)
@@ -190,16 +189,29 @@ assert dfl.transduce((1, 1, 1, 1, 1)) == (0, 1, 2, 3, 0)
 
 This project uses pytest. Simply run
 
-`$ poetry pytest`
+`$ poetry run pytest`
 
 in the root of the repository.
 
-# TODO
+# Similar Libraries
+## Python Based
+    1. https://github.com/steynvl/inferrer : DFA learning
+       library supporting active and passive dfa learning. Active
+       learning is based on L* with an observation table. Also
+       supports learning NFAs.
 
-1. [ ] Test counterexample validation decorator.
-1. [ ] Add retry old counterexamples decorator.
-1. [ ] Default to random sampling counterexample engine
+   1. https://gitlab.lis-lab.fr/dev/scikit-splearn/ : Library for learning
+      weighted automata via the spectral method.
 
+   1. https://pypi.org/project/pylstar/ : Another L* based DFA
+      learning library.
+
+## Java Based
+   1. https://learnlib.de/ : State of the art automata learning
+      toolbox. Supports passive and active learning algorithms for DFAs,
+      Mealy Machines, and Visibly Push Down Automata.
+   1. https://github.com/lorisdanto/symbolicautomata : Library for
+      symbolic automata and symbolic visibly pushdown automata.
 
 # Footnotes
 
