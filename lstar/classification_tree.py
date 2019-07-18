@@ -1,4 +1,3 @@
-from __future__ import annotations
 from typing import Mapping, Optional
 
 import attr
@@ -11,7 +10,7 @@ from lstar.common import Alphabet, Letter, LabelOracle, Word
 @attr.s(auto_attribs=True)
 class Node:
     data: Word = ()
-    children: Mapping[Letter, Optional[Node]] = attr.ib(factory=dict)
+    children: Mapping[Letter, Optional["Node"]] = attr.ib(factory=dict)
 
     @property
     def is_leaf(self):
