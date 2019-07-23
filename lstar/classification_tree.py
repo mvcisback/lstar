@@ -40,7 +40,7 @@ class ClassificationTree:
 
             if test_res not in node.children:  # Discovered new state.
                 assert self.outputs != frozenset([False, True])
-                node[test_res] = Node(test)
+                node[test_res] = Node(word)
 
             node = node[test_res]
 
