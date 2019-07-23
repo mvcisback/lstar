@@ -1,4 +1,5 @@
 from lstar.learn import _learn_dfa, learn_dfa
+from lstar import iterative_deeping_ce
 
 
 def test_learn_dfa():
@@ -58,29 +59,21 @@ def test_learn_moore1():
 
 
 def test_learn_moore2():
-    def find_ce(dfa):
-        count = len(dfa.states())
-        assert count in (1, 4)
-        if count < 4:
-            return (1, 1, 0, 1)
-        elif count >= 4:
-            return None
-
     def label(state):
-        return sum(state) % 4
+        return sum(state) % 5
 
     assert label(()) == 0
     assert label((1,)) == 1
     assert label((1, 1, )) == 2
     assert label((1, 1, 1)) == 3
     assert label((1, 1, 0, 1)) == 3
-    assert label((1, 1, 1, 1)) == 0
+    assert label((1, 1, 1, 1)) == 4
 
     dfl = learn_dfa(
         inputs={0, 1},
         label=label,
-        find_counter_example=find_ce,
-        outputs={0, 1, 2},
+        find_counter_example=iterative_deeping_ce(label, depth=7),
+        outputs=range(5),
     )
 
     assert dfl.transduce(()) == ()
@@ -88,4 +81,4 @@ def test_learn_moore2():
     assert dfl.transduce((1, 1, )) == (0, 1)
     assert dfl.transduce((1, 1, 1)) == (0, 1, 2)
     assert dfl.transduce((1, 1, 0, 1)) == (0, 1, 2, 2)
-    assert dfl.transduce((1, 1, 1, 1, 1)) == (0, 1, 2, 3, 0)
+    assert dfl.transduce((1, 1, 1, 1, 1)) == (0, 1, 2, 3, 4)
