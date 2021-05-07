@@ -19,7 +19,6 @@ provided in [^1].
     - [All together](#all-together)
 - [Learning Moore Machines and DFA-labelers](#learning-moore-machines-and-dfa-labelers)
 - [Testing](#testing)
-- [TODO](#todo)
 - [Footnotes](#footnotes)
 
 <!-- markdown-toc end -->
