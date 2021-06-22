@@ -25,13 +25,17 @@ def _learn_dfa(inputs, label, find_ce, outputs=None, *, with_tree=False):
     Mainly useful for debugging.
     """
     learner = dfa_learner(inputs, label, outputs, with_tree=with_tree)
-    hypothesis = next(learner)
+    if with_tree:
+        hypothesis, tree = next(learner)
+    else:
+        hypothesis = next(learner)
     while True:
-        yield hypothesis
+        yield (hypothesis, tree) if with_tree else hypothesis
         ce = find_ce(hypothesis)
         if ce is None:
             return
         hypothesis = learner.send(ce)
+        tree.update_tree(ce, hypothesis)
 
 
 def dfa_learner(inputs, label, outputs=None, *, with_tree=False):
