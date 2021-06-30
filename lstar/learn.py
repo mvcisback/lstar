@@ -1,18 +1,18 @@
 import funcy as fn
-from dfa import DFA
+from dfa import DFA, dict2dfa, dfa2dict
 
 from lstar.classification_tree import ClassificationTree
 from lstar.common import Alphabet
 
 
 def extract_dfa(tree: ClassificationTree, inputs: Alphabet) -> DFA:
-    return DFA(
+    return dict2dfa(dfa2dict(DFA(
         start=(),
         inputs=inputs,
         label=tree.labeler,
         transition=lambda w, c: tree.sift(w + (c,)).data,
         outputs=tree.outputs,
-    )
+    )))
 
 
 def learn_dfa(inputs, label, find_counter_example, outputs=None) -> DFA:
@@ -25,17 +25,13 @@ def _learn_dfa(inputs, label, find_ce, outputs=None, *, with_tree=False):
     Mainly useful for debugging.
     """
     learner = dfa_learner(inputs, label, outputs, with_tree=with_tree)
-    if with_tree:
-        hypothesis, tree = next(learner)
-    else:
-        hypothesis = next(learner)
+    hypothesis = next(learner)
     while True:
-        yield (hypothesis, tree) if with_tree else hypothesis
+        yield hypothesis
         ce = find_ce(hypothesis)
         if ce is None:
             return
         hypothesis = learner.send(ce)
-        tree.update_tree(ce, hypothesis)
 
 
 def dfa_learner(inputs, label, outputs=None, *, with_tree=False):
