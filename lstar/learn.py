@@ -6,14 +6,16 @@ from lstar.common import Alphabet
 
 
 def extract_dfa(tree: ClassificationTree, inputs: Alphabet) -> DFA:
-    # Convert to dict to remove dependence on membership oracle.
-    return dict2dfa(*dfa2dict(DFA(
+    tmp_dfa = DFA(
         start=(),
         inputs=inputs,
         label=tree.labeler,
         transition=lambda w, c: tree.sift(w + (c,)).data,
         outputs=tree.outputs,
-    )))
+    )
+
+    # Convert to dict (and back) to remove dependence on membership oracle.
+    return dict2dfa(*dfa2dict(tmp_dfa))
 
 
 def learn_dfa(inputs, label, find_counter_example, outputs=None) -> DFA:
