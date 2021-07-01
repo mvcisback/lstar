@@ -7,9 +7,9 @@ authors = ["Marcell J. Vazquez-Chanlatte <mvc@linux.com>"]
 license = "MIT"
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = "^3.9"
 funcy = "^1.12"
-attrs = "^20.0.0"
+attrs = "^21.0.0"
 lazytree = "^0.3.2"
 dfa = "^2.0.0"
 
