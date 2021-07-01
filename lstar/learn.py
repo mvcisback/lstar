@@ -6,7 +6,8 @@ from lstar.common import Alphabet
 
 
 def extract_dfa(tree: ClassificationTree, inputs: Alphabet) -> DFA:
-    return dict2dfa(dfa2dict(DFA(
+    # Convert to dict to remove dependence on membership oracle.
+    return dict2dfa(*dfa2dict(DFA(
         start=(),
         inputs=inputs,
         label=tree.labeler,
@@ -46,9 +47,5 @@ def dfa_learner(inputs, label, outputs=None, *, with_tree=False):
 
     while True:
         hypothesis = extract_dfa(tree, inputs)
-        # DFA is lazily implemented.
-        # Need to actually run through the DFA once to remove dependence
-        # on membership oracle.
-        hypothesis.states()
         ce = yield (hypothesis, tree) if with_tree else hypothesis
         tree.update_tree(ce, hypothesis)
