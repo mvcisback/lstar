@@ -1,18 +1,18 @@
 import funcy as fn
-from dfa import DFA
+from dfa import DFA, dict2dfa, dfa2dict
 
 from lstar.classification_tree import ClassificationTree
 from lstar.common import Alphabet
 
 
 def extract_dfa(tree: ClassificationTree, inputs: Alphabet) -> DFA:
-    return DFA(
+    return dict2dfa(dfa2dict(DFA(
         start=(),
         inputs=inputs,
         label=tree.labeler,
         transition=lambda w, c: tree.sift(w + (c,)).data,
         outputs=tree.outputs,
-    )
+    )))
 
 
 def learn_dfa(inputs, label, find_counter_example, outputs=None) -> DFA:
