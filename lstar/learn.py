@@ -1,3 +1,4 @@
+import attr
 import funcy as fn
 from dfa import DFA, dict2dfa, dfa2dict
 
@@ -15,7 +16,8 @@ def extract_dfa(tree: ClassificationTree, inputs: Alphabet) -> DFA:
     )
 
     # Convert to dict (and back) to remove dependence on membership oracle.
-    return dict2dfa(*dfa2dict(tmp_dfa))
+    tmp_dfa = dict2dfa(*dfa2dict(tmp_dfa))
+    return attr.evolve(tmp_dfa, outputs=tree.outputs)
 
 
 def learn_dfa(inputs, label, find_counter_example, outputs=None) -> DFA:
